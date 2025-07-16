@@ -1,423 +1,460 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tres Listados en Anillo (Scroll Múltiple)</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f0f2f5;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-        .main-wrapper {
-            display: flex;
-            gap: 40px;
-            justify-content: center;
-            align-items: flex-start;
-            flex-wrap: wrap;
-        }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tres Listados en Anillo (Scroll Múltiple)</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
+    <style>
         .display-wrapper {
-            display: flex;
+            /*display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            justify-content: center;*/
             overflow: hidden;
             position: relative;
-            margin-bottom: 20px;
-            /* Agregado para permitir el arrastre visual */
-            cursor: grab;
             user-select: none; /* Evita que el texto se seleccione al arrastrar */
         }
         .display-wrapper.grabbing {
             cursor: grabbing;
         }
         .number-item {
-            font-size: 16px;
-            font-weight: 600;
-            color: #666;
+            font-size: 14px;
+            font-weight: 400;
+            color: #081754;
             padding: 5px 0;
             transition: all 0.2s ease-out;
-            opacity: 0.5;
-            transform: scale(0.8);
+            opacity: 1;
+            transform: scale(1);
             line-height: 1.2;
         }
         .number-item.active {
             font-size: 16px;
             font-weight: 700;
-            color: #2c3e50;
+            color: #1C42E8;
             opacity: 1;
             transform: scale(1);
-            background-color: #e0f2f7;
-            border-radius: 10px;
-            padding: 10px 20px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
         }
-        h1 {
-            color: #333;
-            margin-bottom: 15px;
-            font-size: 1.8rem;
-        }
-        .instruction-text {
-            color: #666;
-            font-size: 0.9rem;
-            margin-top: 10px;
-            margin-bottom: 20px;
-        }
+		#container1{
+			background: transparent;
+			position: absolute;
+			margin-left: -2px;
+			margin-top: -45px;
+			width: 35px;
+			height: 195px;
+			z-index: 10;
+		}
+		#numeroDisplayWrapper1{
+			width: 35px;
+		}
+		#numeroDisplayWrapper1 .number-item{
+			text-align: right;
+		}
+		#numeroDisplayWrapper1 .number-item.active{
+			text-align: right;
+		}
+		#numeroDisplayWrapper1.display-wrapper{
+			margin-top: -43px;
+			margin-left: -13px;
+		}
+		#container2{
+			background: transparent;
+			position: absolute;
+			margin-left: -5px;
+			margin-top: -21px;
+			width: 100px;
+			height: 195px;
+			z-index: 10;
+		}
+		#numeroDisplayWrapper2{
+			width: 95px;
+		}
+		#numeroDisplayWrapper2.display-wrapper{
+			margin-top: -19px;
+		}
+		#container3{
+			background: transparent;
+			position: absolute;
+			margin-left: -5px;
+			margin-top: -45px;
+			width: 50px;
+			height: 195px;
+			z-index: 10;
+		}
+		#numeroDisplayWrapper3{
+			width: 40px;
+		}
+		#numeroDisplayWrapper3.display-wrapper{
+			margin-top: -43px;
+			margin-right: -15px;
+		}
+		.container-calendar{
+			width: 260px;
+			height: 210px;
+			border: 5px solid white;
+			background: white;
+			color: black;
+			display: flex;
+			align-items: center;
+			position: relative;
+		}
+		.container-day{
+			margin-left: -15px;
+			height: 100%;
+		}
+		.container-month{
+			height: 100%;
+			margin-left: 10px;
+		}
+		.container-year{
+			height: 100%;
+		}
+		.current-date-bar{
+			background-color: #F3F3F3;
+			position: absolute;
+			width: 100%;
+			height: 30px;
+			border-radius: 8px;
+		}
     </style>
 </head>
 <body>
-    <div class="container text-center">
-        <input id="fechaNacimiento" class="form-control form-control-lg mb-3" type="text" placeholder="DD/MM/AAAA" readonly="readonly" />
-        
-        <div class="row">
-            <div class="col">
-                <div class="container" id="container1">
-                    <h1>Día</h1>
-                    <div id="numeroDisplayWrapper1" class="display-wrapper">
-                        </div>
-                </div>
-            </div>
-            <div class="col">
-                <div class="container" id="container2">
-                    <h1>Mes</h1>
-                    <div id="numeroDisplayWrapper2" class="display-wrapper">
-                        </div>
-                </div>
-            </div>
-            <div class="col">
-                <div class="container" id="container3">
-                    <h1>Año</h1>
-                    <div id="numeroDisplayWrapper3" class="display-wrapper">
-                        </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <div class="container">
+        <input id="fechaNacimiento" class="form-control form-control-lg mb-3" type="text" placeholder="DD/MM/AAAA" readonly="readonly" />
 
-    <script>
-        // Function to generate a ring-shaped list
-        function generarAnillo(startNumber, endNumber, calendarPosition, initialActiveValue) {
-            const numeros = [];
-            for (let i = startNumber; i <= endNumber; i++) {
-                numeros.push(i);
-            }
+		<div class="container-calendar">
+			<div class="current-date-bar"></div>
+            <div class="container-day">
+                <div class="container" id="container1"></div>
+				<div id="numeroDisplayWrapper1" class="display-wrapper"></div>
+            </div>
+            <div class="container-month">
+                <div class="container" id="container2"></div>
+				<div id="numeroDisplayWrapper2" class="display-wrapper"></div>
+            </div>
+            <div class="container-year">
+                <div class="container" id="container3"></div>
+				<div id="numeroDisplayWrapper3" class="display-wrapper"></div>
+            </div>
+        </div>
+    </div>
 
-            const totalNumeros = numeros.length;
-            let indiceActual = 0;
-            
-            const initialIndex = numeros.indexOf(initialActiveValue);
-            if (initialIndex !== -1) {
-                indiceActual = initialIndex;
-            } else {
-                indiceActual = 0;
-            }
+    <script>
+        // Function to generate a ring-shaped list
+        function generarAnillo(startNumber, endNumber, calendarPosition, initialActiveValue) {
+            const numeros = [];
+            for (let i = startNumber; i <= endNumber; i++) {
+                numeros.push(i);
+            }
 
-            return {
-                siguiente: function() {
-                    indiceActual = (indiceActual + 1) % totalNumeros;
-                    return numeros[indiceActual];
-                },
-                anterior: function() {
-                    indiceActual = (indiceActual - 1 + totalNumeros) % totalNumeros;
-                    return numeros[indiceActual];
-                },
-                obtenerIndiceActual: function() {
-                    if(calendarPosition == 1){ 
-                        calculateDay(indiceActual, numeros[indiceActual]);
-                    }
-                    if(calendarPosition == 2){
-                        calculateMonth(indiceActual, numeros[indiceActual]);
-                    }
-                    if(calendarPosition == 3){
-                        calculateYear(indiceActual, numeros[indiceActual]);
-                    }
-                    return indiceActual;
-                },
-                obtenerTodos: function() {
-                    return numeros;
-                },
-                obtenerTotalNumeros: function() {
-                    return totalNumeros;
-                }
-            };
-        }
+            const totalNumeros = numeros.length;
+            let indiceActual = 0;
+            
+            const initialIndex = numeros.indexOf(initialActiveValue);
+            if (initialIndex !== -1) {
+                indiceActual = initialIndex;
+            } else {
+                indiceActual = 0;
+            }
 
-        // --- Configuration and Initialization of the Lists ---
+            return {
+                siguiente: function() {
+                    indiceActual = (indiceActual + 1) % totalNumeros;
+                    return numeros[indiceActual];
+                },
+                anterior: function() {
+                    indiceActual = (indiceActual - 1 + totalNumeros) % totalNumeros;
+                    return numeros[indiceActual];
+                },
+                obtenerIndiceActual: function() {
+                    if(calendarPosition == 1){ 
+                        calculateDay(indiceActual, numeros[indiceActual]);
+                    }
+                    if(calendarPosition == 2){
+                        calculateMonth(indiceActual, numeros[indiceActual]);
+                    }
+                    if(calendarPosition == 3){
+                        calculateYear(indiceActual, numeros[indiceActual]);
+                    }
+                    return indiceActual;
+                },
+                obtenerTodos: function() {
+                    return numeros;
+                },
+                obtenerTotalNumeros: function() {
+                    return totalNumeros;
+                }
+            };
+        }
 
-        const NUM_VISIBLE_ELEMENTS = 7;
-        const HALF_VISIBLE_ELEMENTS = Math.floor(NUM_VISIBLE_ELEMENTS / 2);
+        // --- Configuration and Initialization of the Lists ---
 
-        const anilloDeNumeros1 = generarAnillo(1, 31, 1, new Date().getDate()); // Día, inicializado al día actual
-        const numeroDisplayWrapper1 = document.getElementById('numeroDisplayWrapper1');
-        const container1 = document.getElementById('container1');
+        const NUM_VISIBLE_ELEMENTS = 7;
+        const HALF_VISIBLE_ELEMENTS = Math.floor(NUM_VISIBLE_ELEMENTS / 2);
 
-        const anilloDeNumeros2 = generarAnillo(1, 12, 2, new Date().getMonth() + 1); // Mes, inicializado al mes actual
-        const numeroDisplayWrapper2 = document.getElementById('numeroDisplayWrapper2');
-        const container2 = document.getElementById('container2');
+        const anilloDeNumeros1 = generarAnillo(1, 31, 1, new Date().getDate()); // Día, inicializado al día actual
+        const numeroDisplayWrapper1 = document.getElementById('numeroDisplayWrapper1');
+        const container1 = document.getElementById('container1');
 
-        const fecha = new Date();
-        const anioActual = fecha.getFullYear();
-        const limitYearsAgo = anioActual - 70;
-        
-        const anilloDeNumeros3 = generarAnillo(limitYearsAgo, anioActual, 3, anioActual);
-        const numeroDisplayWrapper3 = document.getElementById('numeroDisplayWrapper3');
-        const container3 = document.getElementById('container3');
+        const anilloDeNumeros2 = generarAnillo(1, 12, 2, new Date().getMonth() + 1); // Mes, inicializado al mes actual
+        const numeroDisplayWrapper2 = document.getElementById('numeroDisplayWrapper2');
+        const container2 = document.getElementById('container2');
 
-        // --- Display Update Functions ---
+        const fecha = new Date();
+        const anioActual = fecha.getFullYear();
+        const limitYearsAgo = anioActual - 70;
+        
+        const anilloDeNumeros3 = generarAnillo(limitYearsAgo, anioActual, 3, anioActual);
+        const numeroDisplayWrapper3 = document.getElementById('numeroDisplayWrapper3');
+        const container3 = document.getElementById('container3');
 
-        function actualizarDisplayDay(anillo, wrapperElement) {
-            wrapperElement.innerHTML = '';
-            const totalNumeros = anillo.obtenerTotalNumeros();
-            const indiceActual = anillo.obtenerIndiceActual();
-            const todosLosNumeros = anillo.obtenerTodos();
+        // --- Display Update Functions ---
 
-            for (let i = -HALF_VISIBLE_ELEMENTS; i <= HALF_VISIBLE_ELEMENTS; i++) {
-                let currentIndex = indiceActual + i;
-                currentIndex = (currentIndex % totalNumeros + totalNumeros) % totalNumeros;
-                const numberValue = todosLosNumeros[currentIndex];
-                const numberElement = document.createElement('div');
-                numberElement.classList.add('number-item');
-                numberElement.textContent = (numberValue >= 1 && numberValue <= 9) ? '0' + numberValue : numberValue;
+        function actualizarDisplayDay(anillo, wrapperElement) {
+            wrapperElement.innerHTML = '';
+            const totalNumeros = anillo.obtenerTotalNumeros();
+            const indiceActual = anillo.obtenerIndiceActual();
+            const todosLosNumeros = anillo.obtenerTodos();
 
-                if (i === 0) {
-                    numberElement.classList.add('active');
-                }
-                wrapperElement.appendChild(numberElement);
-            }
-        }
-        
-        function actualizarDisplayMonth(anillo, wrapperElement) {
-            wrapperElement.innerHTML = '';
-            let nameMonth = '';
-            const totalNumeros = anillo.obtenerTotalNumeros();
-            const indiceActual = anillo.obtenerIndiceActual();
-            const todosLosNumeros = anillo.obtenerTodos();
+            for (let i = -HALF_VISIBLE_ELEMENTS; i <= HALF_VISIBLE_ELEMENTS; i++) {
+                let currentIndex = indiceActual + i;
+                currentIndex = (currentIndex % totalNumeros + totalNumeros) % totalNumeros;
+                const numberValue = todosLosNumeros[currentIndex];
+                const numberElement = document.createElement('div');
+                numberElement.classList.add('number-item');
+                numberElement.textContent = (numberValue >= 1 && numberValue <= 9) ? '0' + numberValue : numberValue;
 
-            for (let i = -HALF_VISIBLE_ELEMENTS; i <= HALF_VISIBLE_ELEMENTS; i++) {
-                let currentIndex = indiceActual + i;
-                currentIndex = (currentIndex % totalNumeros + totalNumeros) % totalNumeros;
-                const numberValue = todosLosNumeros[currentIndex];
-                
-                switch (numberValue) {
-                    case 1: nameMonth = 'Enero'; break;
-                    case 2: nameMonth = 'Febrero'; break;
-                    case 3: nameMonth = 'Marzo'; break;
-                    case 4: nameMonth = 'Abril'; break; // Corregido: "Abrir" a "Abril"
-                    case 5: nameMonth = 'Mayo'; break;
-                    case 6: nameMonth = 'Junio'; break;
-                    case 7: nameMonth = 'Julio'; break;
-                    case 8: nameMonth = 'Agosto'; break;
-                    case 9: nameMonth = 'Septiembre'; break;
-                    case 10: nameMonth = 'Octubre'; break;
-                    case 11: nameMonth = 'Noviembre'; break;
-                    case 12: nameMonth = 'Diciembre'; break;
-                    default: nameMonth = 'Error'; break;
-                }
+                if (i === 0) {
+                    numberElement.classList.add('active');
+                }
+                wrapperElement.appendChild(numberElement);
+            }
+        }
+        
+        function actualizarDisplayMonth(anillo, wrapperElement) {
+            wrapperElement.innerHTML = '';
+            let nameMonth = '';
+            const totalNumeros = anillo.obtenerTotalNumeros();
+            const indiceActual = anillo.obtenerIndiceActual();
+            const todosLosNumeros = anillo.obtenerTodos();
 
-                const numberElement = document.createElement('div');
-                numberElement.classList.add('number-item');
-                numberElement.textContent = nameMonth;
+            for (let i = -HALF_VISIBLE_ELEMENTS; i <= HALF_VISIBLE_ELEMENTS; i++) {
+                let currentIndex = indiceActual + i;
+                currentIndex = (currentIndex % totalNumeros + totalNumeros) % totalNumeros;
+                const numberValue = todosLosNumeros[currentIndex];
+                
+                switch (numberValue) {
+                    case 1: nameMonth = 'Enero'; break;
+                    case 2: nameMonth = 'Febrero'; break;
+                    case 3: nameMonth = 'Marzo'; break;
+                    case 4: nameMonth = 'Abril'; break;
+                    case 5: nameMonth = 'Mayo'; break;
+                    case 6: nameMonth = 'Junio'; break;
+                    case 7: nameMonth = 'Julio'; break;
+                    case 8: nameMonth = 'Agosto'; break;
+                    case 9: nameMonth = 'Septiembre'; break;
+                    case 10: nameMonth = 'Octubre'; break;
+                    case 11: nameMonth = 'Noviembre'; break;
+                    case 12: nameMonth = 'Diciembre'; break;
+                    default: nameMonth = 'Error'; break;
+                }
 
-                if (i === 0) {
-                    numberElement.classList.add('active');
-                }
-                wrapperElement.appendChild(numberElement);
-            }
-        }
-        
-        function actualizarDisplayYear(anillo, wrapperElement) {
-            wrapperElement.innerHTML = '';
-            const totalNumeros = anillo.obtenerTotalNumeros();
-            const indiceActual = anillo.obtenerIndiceActual();
-            const todosLosNumeros = anillo.obtenerTodos();
+                const numberElement = document.createElement('div');
+                numberElement.classList.add('number-item');
+                numberElement.textContent = nameMonth;
 
-            for (let i = -HALF_VISIBLE_ELEMENTS; i <= HALF_VISIBLE_ELEMENTS; i++) {
-                let currentIndex = indiceActual + i;
-                currentIndex = (currentIndex % totalNumeros + totalNumeros) % totalNumeros;
-                const numberValue = todosLosNumeros[currentIndex];
-                const numberElement = document.createElement('div');
-                numberElement.classList.add('number-item');
-                numberElement.textContent = numberValue;
+                if (i === 0) {
+                    numberElement.classList.add('active');
+                }
+                wrapperElement.appendChild(numberElement);
+            }
+        }
+        
+        function actualizarDisplayYear(anillo, wrapperElement) {
+            wrapperElement.innerHTML = '';
+            const totalNumeros = anillo.obtenerTotalNumeros();
+            const indiceActual = anillo.obtenerIndiceActual();
+            const todosLosNumeros = anillo.obtenerTodos();
 
-                if (i === 0) {
-                    numberElement.classList.add('active');
-                }
-                wrapperElement.appendChild(numberElement);
-            }
-        }
-        
-        function calculateDay (index, day) {
-            const fechaNacimiento = document.getElementById('fechaNacimiento');
-            const arrayFechaNacimiento = fechaNacimiento.value.split('/');
-            const nuevoDia = (day >= 1 && day <= 9) ? '0'+day : day;
-            
-            if(arrayFechaNacimiento.length == 3){
-                const nuevaFecha = nuevoDia + '/' + arrayFechaNacimiento[1] + '/' + arrayFechaNacimiento[2];
-                fechaNacimiento.value = nuevaFecha;
-            } else {
-                console.log("Error al calcular el dia");
-            }
-        }
-        
-        function calculateMonth (index, month) {
-            const fechaNacimiento = document.getElementById('fechaNacimiento');
-            const arrayFechaNacimiento = fechaNacimiento.value.split('/');
-            const nuevoMes = (month >= 1 && month <= 9) ? '0'+month : month;
-            
-            if(arrayFechaNacimiento.length == 3){
-                const nuevaFecha = arrayFechaNacimiento[0] + '/' + nuevoMes + '/' + arrayFechaNacimiento[2];
-                fechaNacimiento.value = nuevaFecha;
-            } else {
-                console.log("Error al calcular el mes");
-            }
-        }
-        
-        function calculateYear (index, year) {
-            const fechaNacimiento = document.getElementById('fechaNacimiento');
-            const arrayFechaNacimiento = fechaNacimiento.value.split('/');
-            
-            if(arrayFechaNacimiento.length == 3){
-                const nuevaFecha = arrayFechaNacimiento[0] + '/' + arrayFechaNacimiento[1] + '/' + year;
-                fechaNacimiento.value = nuevaFecha;
-            } else {
-                console.log("Error al calcular el año");
-            }
-        }
-        
-        function calculateCurrentDate () {
-            const fecha = new Date();
-            const mes = fecha.getMonth()+1;
-            const dia = fecha.getDate();
-            const anio = fecha.getFullYear();
-            const fechaActual = (dia<10 ? '0' : '') + dia + '/' + (mes<10 ? '0' : '') + mes + '/'+(anio);
-            const fechaNacimiento = document.getElementById('fechaNacimiento');
-            fechaNacimiento.value = fechaActual;
-        }
+            for (let i = -HALF_VISIBLE_ELEMENTS; i <= HALF_VISIBLE_ELEMENTS; i++) {
+                let currentIndex = indiceActual + i;
+                currentIndex = (currentIndex % totalNumeros + totalNumeros) % totalNumeros;
+                const numberValue = todosLosNumeros[currentIndex];
+                const numberElement = document.createElement('div');
+                numberElement.classList.add('number-item');
+                numberElement.textContent = numberValue;
 
-        // --- Manejo de eventos táctiles y de arrastre para cada lista ---
-        function enableDragScroll(containerElement, anillo, updateFunction) {
-            let isDragging = false;
-            let startY;
-            let scrollTop;
+                if (i === 0) {
+                    numberElement.classList.add('active');
+                }
+                wrapperElement.appendChild(numberElement);
+            }
+        }
+        
+        function calculateDay (index, day) {
+            const fechaNacimiento = document.getElementById('fechaNacimiento');
+            const arrayFechaNacimiento = fechaNacimiento.value.split('/');
+            const nuevoDia = (day >= 1 && day <= 9) ? '0'+day : day;
+            
+            if(arrayFechaNacimiento.length == 3){
+                const nuevaFecha = nuevoDia + '/' + arrayFechaNacimiento[1] + '/' + arrayFechaNacimiento[2];
+                fechaNacimiento.value = nuevaFecha;
+            } else {
+                console.log("Error al calcular el dia");
+            }
+        }
+        
+        function calculateMonth (index, month) {
+            const fechaNacimiento = document.getElementById('fechaNacimiento');
+            const arrayFechaNacimiento = fechaNacimiento.value.split('/');
+            const nuevoMes = (month >= 1 && month <= 9) ? '0'+month : month;
+            
+            if(arrayFechaNacimiento.length == 3){
+                const nuevaFecha = arrayFechaNacimiento[0] + '/' + nuevoMes + '/' + arrayFechaNacimiento[2];
+                fechaNacimiento.value = nuevaFecha;
+            } else {
+                console.log("Error al calcular el mes");
+            }
+        }
+        
+        function calculateYear (index, year) {
+            const fechaNacimiento = document.getElementById('fechaNacimiento');
+            const arrayFechaNacimiento = fechaNacimiento.value.split('/');
+            
+            if(arrayFechaNacimiento.length == 3){
+                const nuevaFecha = arrayFechaNacimiento[0] + '/' + arrayFechaNacimiento[1] + '/' + year;
+                fechaNacimiento.value = nuevaFecha;
+            } else {
+                console.log("Error al calcular el año");
+            }
+        }
+        
+        function calculateCurrentDate () {
+            const fecha = new Date();
+            const mes = fecha.getMonth()+1;
+            const dia = fecha.getDate();
+            const anio = fecha.getFullYear();
+            const fechaActual = (dia<10 ? '0' : '') + dia + '/' + (mes<10 ? '0' : '') + mes + '/'+(anio);
+            const fechaNacimiento = document.getElementById('fechaNacimiento');
+            fechaNacimiento.value = fechaActual;
+        }
 
-            const wrapperElement = containerElement.querySelector('.display-wrapper');
+        // --- Manejo de eventos táctiles y de arrastre para cada lista ---
+        function enableDragScroll(containerElement, displayWrapperElement, anillo, updateFunction) {
+            let isDragging = false;
+            let startY;
+            let scrollTop;
 
-            containerElement.addEventListener('mousedown', (e) => {
-                isDragging = true;
-                wrapperElement.classList.add('grabbing');
-                startY = e.clientY;
-                scrollTop = wrapperElement.scrollTop;
-                e.preventDefault(); // Evita la selección de texto
-            });
+            // Usamos el displayWrapperElement que recibimos como argumento
+            const wrapperElement = displayWrapperElement; 
 
-            containerElement.addEventListener('mousemove', (e) => {
-                if (!isDragging) return;
-                const deltaY = e.clientY - startY;
-                
-                // Determina la dirección del "arrastre"
-                if (Math.abs(deltaY) > 10) { // Umbral para detectar un arrastre significativo
-                    if (deltaY < 0) { // Arrastre hacia arriba (simula scroll hacia abajo)
-                        anillo.siguiente();
-                    } else { // Arrastre hacia abajo (simula scroll hacia arriba)
-                        anillo.anterior();
-                    }
-                    updateFunction(anillo, wrapperElement);
-                    startY = e.clientY; // Resetea la posición inicial para el siguiente "paso"
-                }
-            });
+            containerElement.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                wrapperElement.classList.add('grabbing');
+                startY = e.clientY;
+                scrollTop = wrapperElement.scrollTop;
+                e.preventDefault(); // Evita la selección de texto
+            });
 
-            containerElement.addEventListener('mouseup', () => {
-                isDragging = false;
-                wrapperElement.classList.remove('grabbing');
-            });
+            containerElement.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                const deltaY = e.clientY - startY;
+                
+                // Determina la dirección del "arrastre"
+                if (Math.abs(deltaY) > 30) { // Umbral para detectar un arrastre significativo
+                    if (deltaY < 0) { // Arrastre hacia arriba (simula scroll hacia abajo)
+                        anillo.siguiente();
+                    } else { // Arrastre hacia abajo (simula scroll hacia arriba)
+                        anillo.anterior();
+                    }
+                    updateFunction(anillo, wrapperElement);
+                    startY = e.clientY; // Resetea la posición inicial para el siguiente "paso"
+                }
+            });
 
-            containerElement.addEventListener('mouseleave', () => {
-                isDragging = false;
-                wrapperElement.classList.remove('grabbing');
-            });
+            containerElement.addEventListener('mouseup', () => {
+                isDragging = false;
+                wrapperElement.classList.remove('grabbing');
+            });
 
-            // Eventos táctiles
-            containerElement.addEventListener('touchstart', (e) => {
-                isDragging = true;
-                startY = e.touches[0].clientY;
-                e.preventDefault(); // Evita el scroll nativo de la página
-            }, { passive: false }); // Usar { passive: false } para permitir preventDefault
+            containerElement.addEventListener('mouseleave', () => {
+                isDragging = false;
+            });
 
-            containerElement.addEventListener('touchmove', (e) => {
-                if (!isDragging) return;
-                const deltaY = e.touches[0].clientY - startY;
+            // Eventos táctiles
+            containerElement.addEventListener('touchstart', (e) => {
+                isDragging = true;
+                startY = e.touches[0].clientY;
+                e.preventDefault(); // Evita el scroll nativo de la página
+            }, { passive: false }); // Usar { passive: false } para permitir preventDefault
 
-                if (Math.abs(deltaY) > 10) { // Umbral para detectar un arrastre significativo
-                    if (deltaY < 0) { // Deslizar hacia arriba
-                        anillo.siguiente();
-                    } else { // Deslizar hacia abajo
-                        anillo.anterior();
-                    }
-                    updateFunction(anillo, wrapperElement);
-                    startY = e.touches[0].clientY; // Resetea la posición inicial para el siguiente "paso"
-                }
-            }, { passive: false });
+            containerElement.addEventListener('touchmove', (e) => {
+                if (!isDragging) return;
+                const deltaY = e.touches[0].clientY - startY;
 
-            containerElement.addEventListener('touchend', () => {
-                isDragging = false;
-            });
-            containerElement.addEventListener('touchcancel', () => {
-                isDragging = false;
-            });
-        }
+                if (Math.abs(deltaY) > 30) { // Umbral para detectar un arrastre significativo
+                    if (deltaY < 0) { // Deslizar hacia arriba
+                        anillo.siguiente();
+                    } else { // Deslizar hacia abajo
+                        anillo.anterior();
+                    }
+                    updateFunction(anillo, wrapperElement);
+                    startY = e.touches[0].clientY; // Resetea la posición inicial para el siguiente "paso"
+                }
+            }, { passive: false });
 
-        // Asignar eventos a cada contenedor
-        enableDragScroll(container1, anilloDeNumeros1, actualizarDisplayDay);
-        enableDragScroll(container2, anilloDeNumeros2, actualizarDisplayMonth);
-        enableDragScroll(container3, anilloDeNumeros3, actualizarDisplayYear);
+            containerElement.addEventListener('touchend', () => {
+                isDragging = false;
+            });
+            containerElement.addEventListener('touchcancel', () => {
+                isDragging = false;
+            });
+        }
 
-        // Asignar evento de rueda (scroll) a List 1 container
-        container1.addEventListener('wheel', (event) => {
-            event.preventDefault(); // Prevent actual page scroll
-            if (event.deltaY > 0) {
-                anilloDeNumeros1.siguiente();
-            } else {
-                anilloDeNumeros1.anterior();
-            }
-            actualizarDisplayDay(anilloDeNumeros1, numeroDisplayWrapper1);
-        });
+        // Asignar eventos a cada contenedor
+        enableDragScroll(container1, numeroDisplayWrapper1, anilloDeNumeros1, actualizarDisplayDay);
+        enableDragScroll(container2, numeroDisplayWrapper2, anilloDeNumeros2, actualizarDisplayMonth);
+        // Modificado: Ahora pasamos numeroDisplayWrapper3 directamente como segundo argumento
+        enableDragScroll(container3, numeroDisplayWrapper3, anilloDeNumeros3, actualizarDisplayYear);
 
-        // Asignar evento de rueda (scroll) a List 2 container
-        container2.addEventListener('wheel', (event) => {
-            event.preventDefault();
-            if (event.deltaY > 0) {
-                anilloDeNumeros2.siguiente();
-            } else {
-                anilloDeNumeros2.anterior();
-            }
-            actualizarDisplayMonth(anilloDeNumeros2, numeroDisplayWrapper2);
-        });
+        // Asignar evento de rueda (scroll) a List 1 container
+        container1.addEventListener('wheel', (event) => {
+            event.preventDefault(); // Prevent actual page scroll
+            if (event.deltaY > 0) {
+                anilloDeNumeros1.siguiente();
+            } else {
+                anilloDeNumeros1.anterior();
+            }
+            actualizarDisplayDay(anilloDeNumeros1, numeroDisplayWrapper1);
+        });
 
-        // Asignar evento de rueda (scroll) a List 3 container
-        container3.addEventListener('wheel', (event) => {
-            event.preventDefault();
-            if (event.deltaY > 0) {
-                anilloDeNumeros3.siguiente();
-            } else {
-                anilloDeNumeros3.anterior();
-            }
-            actualizarDisplayYear(anilloDeNumeros3, numeroDisplayWrapper3);
-        });
+        // Asignar evento de rueda (scroll) a List 2 container
+        container2.addEventListener('wheel', (event) => {
+            event.preventDefault();
+            if (event.deltaY > 0) {
+                anilloDeNumeros2.siguiente();
+            } else {
+                anilloDeNumeros2.anterior();
+            }
+            actualizarDisplayMonth(anilloDeNumeros2, numeroDisplayWrapper2);
+        });
 
-        // --- Display initial numbers on page load ---
-        actualizarDisplayDay(anilloDeNumeros1, numeroDisplayWrapper1);
-        actualizarDisplayMonth(anilloDeNumeros2, numeroDisplayWrapper2);
-        actualizarDisplayYear(anilloDeNumeros3, numeroDisplayWrapper3);
-        calculateCurrentDate();
-    </script>
+        // Asignar evento de rueda (scroll) a List 3 container
+        container3.addEventListener('wheel', (event) => {
+            event.preventDefault();
+            if (event.deltaY > 0) {
+                anilloDeNumeros3.siguiente();
+            } else {
+                anilloDeNumeros3.anterior();
+            }
+            actualizarDisplayYear(anilloDeNumeros3, numeroDisplayWrapper3);
+        });
+
+        // --- Display initial numbers on page load ---
+        actualizarDisplayDay(anilloDeNumeros1, numeroDisplayWrapper1);
+        actualizarDisplayMonth(anilloDeNumeros2, numeroDisplayWrapper2);
+        actualizarDisplayYear(anilloDeNumeros3, numeroDisplayWrapper3);
+        calculateCurrentDate();
+    </script>
 </body>
 </html>
